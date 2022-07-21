@@ -66,9 +66,5 @@ body {
 }
 
 .product {
-  width: 80%;
-}
-
-.none {
-  display: none;
+  width: 100%;
 }
