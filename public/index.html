@@ -96,7 +96,7 @@
     </div>
 
     <div class="container mt-5">
-      <details class="product">
+      <!-- <details class="product">
         <summary class="title">
           &nbsp;&nbsp;
           <h4 style="display: inline">염경위키 역사</h4>
@@ -105,7 +105,7 @@
         <span class="date">2022.7.21</span>
         <br />2022년 7월 17일 개발 시작<br /><br />7월 20일 로그인 및 글쓰기
         기능 개발 완료<br /><br />7월 21일 배포 및 첫 위키 작성<br /><br />7월
-        23일 위키 삭제 기능 추가
+        23일 위키 삭제 기능 추가<br /><br />7월 25일 위키 보기 기능 개편
       </details>
       <details class="product">
         <summary class="title">
@@ -139,7 +139,7 @@
         2019.12.26. 기록관리 유공기관 교육장 표창<br /><br />
         2020.03.01 제5대 강병호 교장 취임<br /><br />
         2021.02.05. 제13회 졸업식(8개 학급 210명)<br /><br />
-      </details>
+      </details> -->
       <script
         src="https://kit.fontawesome.com/1b6a314525.js"
         crossorigin="anonymous"
@@ -153,47 +153,19 @@
         .then((결과) => {
           결과.forEach((doc) => {
             var docId = doc.id;
-            if (document.cookie.substr(5) === doc.data().작성자) {
-              var templete = `<details class="product">
-      <summary class="title">&nbsp;&nbsp;
-        <h4 style="display: inline;">
-          ${doc.data().제목}
-        </h4>&nbsp;&nbsp;&nbsp;<button class="deleteBtn btn btn-danger" id=${docId}><i class="fa-solid fa-trash-can"></i></button>
-      </summary>
-      <span class="date">${doc.data().날짜}</span><br>
-      ${doc.data().내용}
-      </details>`;
-            } else {
-              var templete = `<details class="product">
-      <summary class="title">&nbsp;&nbsp;
-        <h4 style="display: inline;">
-          ${doc.data().제목}
-        </h4>&nbsp;&nbsp;&nbsp;
-      </summary>
-      <span class="date">${doc.data().날짜}</span><br>
-      ${doc.data().내용}
-      </details>`;
-            }
-            $(".container").append(templete);
+            var templete = `
+              <ul>
+                <li>
+                  <h4>
+                    <a href="./wiki.html?id=${docId}" class="wikiTitle">
+                      ${doc.data().제목}
+                    </a>
+                  </h4>
+                </li>
+              </ul>
+              `;
 
-            $(".deleteBtn").click(function (e) {
-              const ok = confirm("이 위키를 진짜로 삭제하시겠습니까?");
-              const targetId = String(e.target.id);
-              if (ok) {
-                db.collection("wiki")
-                  .doc(targetId)
-                  .delete()
-                  .then(() => {
-                    alert("위키 삭제에 성공하였습니다.");
-                  })
-                  .catch(() => {
-                    alert(
-                      "위키 삭제에 실패하였습니다. 새로고침 후 다시 시도해주세요."
-                    );
-                  });
-                // console.log(targetId);
-              }
-            });
+            $(".container").append(templete);
           });
         });
     </script>

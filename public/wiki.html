@@ -59,6 +59,11 @@
       crossorigin="anonymous"
     ></script>
 
+    <script
+        src="https://kit.fontawesome.com/1b6a314525.js"
+        crossorigin="anonymous"
+      ></script>
+
     <script src="https://www.gstatic.com/firebasejs/9.9.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.9.0/firebase-auth-compat.js"></script>
     <script
@@ -82,24 +87,69 @@
       firebase.initializeApp(firebaseConfig);
     </script>
 
-    <h3 class="tips">본 위키는 HTML 형식으로 작성하여 주십시오.</h3>
+    <script type="module">
+      const db = firebase.firestore();
+      const searchParams = new URLSearchParams(location.search);
 
-    <div class="container mt-5">
-      <input
-        type="text"
-        class="form-control mt-2"
-        id="title"
-        placeholder="위키 제목 입력"
-      />
-      <textarea
-        class="form-control mt-2"
-        id="content"
-        placeholder="내용 입력"
-        style="height: 350px"
-      ></textarea>
-      <button class="btn btn-outline-dark mt-3" id="send">올리기</button>
+      for (const param of searchParams) {
+        if(param[0] === "id") {
+          db.collection("wiki")
+          .get()
+          .then((결과) => {
+            결과.forEach((doc) => {
+              var docId = doc.id;
+              if(docId === param[1]) {
+                if(document.cookie.substr(5) === doc.data().작성자) {
+                  var templete = `
+                    <br><br><br>
+                    <h1 style="display: inline;">
+                      ${doc.data().제목}
+                    </h1>&nbsp;
+                    <span class="date">${doc.data().날짜}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button class="deleteBtn btn btn-danger" id=${docId}>
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button><br><br><br>
+                    <div class="content">${doc.data().내용}</div>
+                  `;
+                }
+                else {
+                  var templete = `
+                    <br><br><br>
+                    <h1 style="display: inline;">
+                      ${doc.data().제목}
+                    </h1>&nbsp;
+                    <span class="date">${doc.data().날짜}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br><br><br>
+                    <div class="content">${doc.data().내용}</div>
+                  `;
+                }
+            }
 
-      <script src="./login.js" type="module"></script>
+            $(".container").append(templete);
+
+            $(".deleteBtn").click(function (e) {
+              const ok = confirm("이 위키를 진짜로 삭제하시겠습니까?\n만일 위키가 삭제되지 않는다면 새로고침한 뒤 다시 시도해 주세요.");
+              const targetId = String(e.target.id);
+              if (ok) {
+                db.collection("wiki")
+                  .doc(targetId)
+                  .delete()
+                  .then(() => {
+                    alert("위키 삭제에 성공하였습니다.");
+                    window.location.href = "/";
+                  })
+                  .catch(() => {
+                    alert(
+                      "위키 삭제에 실패하였습니다. 새로고침 후 다시 시도해주세요."
+                    );
+                  });
+              }
+            });
+            });
+        });
+        }
+      }
+      </script>
+      <div class="container"></div>
     </div>
   </body>
 </html>

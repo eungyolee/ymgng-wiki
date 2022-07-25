@@ -52,7 +52,8 @@ body {
   margin-top: 3%;
 }
 
-.anchor {
+.anchor,
+.wikiTitle {
   display: block;
   margin-top: 8%;
   text-decoration: none;
@@ -60,11 +61,25 @@ body {
   width: 130px;
 }
 
-.anchor:hover {
+.wikiTitle {
+  width: 80%;
+  margin-top: 3%;
+}
+
+.anchor:hover,
+.wikiTitle:hover {
   color: black;
   text-decoration: underline;
 }
 
 .product {
   width: 100%;
+}
+
+.content {
+  font-size: 1.1em;
+}
+
+.deleteBtn {
+  margin-bottom: 1.5%;
 }
