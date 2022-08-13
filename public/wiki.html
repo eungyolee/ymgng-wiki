@@ -99,49 +99,55 @@
             결과.forEach((doc) => {
               var docId = doc.id;
               if(docId === param[1]) {
-                if(document.cookie.substr(5) === doc.data().작성자) {
-                  var templete = `
-                    <br><br><br>
-                    <h1 style="display: inline;">
-                      ${doc.data().제목}
-                    </h1>&nbsp;
-                    <span class="date">${doc.data().날짜}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <button class="deleteBtn btn btn-danger" id=${docId}>
-                      <i class="fa-solid fa-trash-can"></i>
-                    </button><br><br><br>
-                    <div class="content">${doc.data().내용}</div>
-                  `;
-                }
-                else {
-                  var templete = `
-                    <br><br><br>
-                    <h1 style="display: inline;">
-                      ${doc.data().제목}
-                    </h1>&nbsp;
-                    <span class="date">${doc.data().날짜}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br><br><br>
-                    <div class="content">${doc.data().내용}</div>
-                  `;
-                }
-            }
+                var templete = `
+                  <br><br><br>
+                  <h1 style="display: inline;">
+                    ${doc.data().제목}
+                  </h1>&nbsp;
+                  <span class="date">${doc.data().날짜}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <button class="editBtn btn btn-danger" id=${docId}>
+                    <i class="fa-solid fa-pencil"></i>
+                  </button><br><br><br>
+                  <div class="content">${doc.data().내용}</div>
+                `;
+                $('input[name=titleValue]').attr('value', `${doc.data().제목}`);
+                $('input[name=contentValue]').attr('value', `${doc.data().내용}`);
+              }
 
             $(".container").append(templete);
 
-            $(".deleteBtn").click(function (e) {
-              const ok = confirm("이 위키를 진짜로 삭제하시겠습니까?\n만일 위키가 삭제되지 않는다면 새로고침한 뒤 다시 시도해 주세요.");
+            $(".editBtn").click(function (e) {
+              const ok = confirm("이 위키를 진짜로 수정하시겠습니까?\n만약 수정이 되지 않는다면 새로고침 후 다시 실행해 주세요.");
               const targetId = String(e.target.id);
               if (ok) {
-                db.collection("wiki")
-                  .doc(targetId)
-                  .delete()
-                  .then(() => {
-                    alert("위키 삭제에 성공하였습니다.");
-                    window.location.href = "/";
-                  })
-                  .catch(() => {
-                    alert(
-                      "위키 삭제에 실패하였습니다. 새로고침 후 다시 시도해주세요."
-                    );
+                var [cookieValue] = document.cookie.split("=", 1);
+                if (cookieValue === "user") {
+                  document.querySelector(".edit").classList.remove("hidden");
+                  $("#send").click(function () {
+                    var date = new Date();
+                    var year = date.getFullYear();
+                    var month = date.getMonth() + 1;
+                    var day = date.getDate();
+                    var user = document.cookie.substr(5);
+                    var data = {
+                      제목: $("#title").val(),
+                      내용: $("#content").val(),
+                      날짜: `${year}.${month}.${day}`,
+                      작성자: user,
+                    };
+                    db.doc(`wiki/${targetId}`).update(data)
+                      .then(() => {
+                        alert("수정에 성공하였습니다.");
+                        window.location.href = "/";
+                      })
+                      .catch((err) => {
+                        alert(`수정에 실패하였습니다.\n실패 이유 : ${err}`);
+                      });
                   });
+                } else {
+                  alert("로그인 후 수정 가능합니다.")
+                  window.location.href = "./login.html";
+                }
               }
             });
             });
@@ -150,6 +156,25 @@
       }
       </script>
       <div class="container"></div>
+      <div class="edit mt-5 hidden">
+        <input
+          type="text"
+          class="form-control mt-2"
+          id="title"
+          value=""
+          name="titleInput"
+          placeholder="위키 제목 수정"
+        />
+        <textarea
+          class="form-control mt-2"
+          id="content"
+          placeholder="내용 수정"
+          value=""
+          name="contentInput"
+          style="height: 350px"
+        ></textarea>
+        <button class="btn btn-outline-dark mt-3" id="send">수정하기</button>
+      </div>
     </div>
   </body>
 </html>

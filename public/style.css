@@ -6,6 +6,10 @@ body {
     "Malgun Gothic", sans-serif;
 }
 
+.hidden {
+  display: none;
+}
+
 .navbar-brand:hover,
 .nav-link:hover {
   color: #dddddd;
